@@ -13,3 +13,6 @@ Example:
     // get captcha string
     $word = $captcha->getKeyString();
 
+
+> Use `master` branch for get stable source
+
