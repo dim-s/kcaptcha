@@ -64,11 +64,14 @@ class KCaptcha {
         }
         $this->fonts = $fonts;
 
+        $length = is_array($config['length']) ? mt_rand($config['length'][0], $config['length'][1]) : (int)$config['length'];
+        if (!$length) $length = 5;
+
         // generating random keystring
         while(true){
             $this->keyString = '';
             for($i = 0; $i < $length; $i++){
-                $this->keyString .= $allowed_symbols{mt_rand(0,strlen($allowed_symbols)-1)};
+                $this->keyString .= $config['allowed_symbols'][mt_rand(0,strlen($config['allowed_symbols'])-1)];
             }
             if(!preg_match('/cp|cb|ck|c6|c9|rn|rm|mm|co|do|cl|db|qp|qb|dp|ww/', $this->keyString)) break;
         }
@@ -81,9 +84,10 @@ class KCaptcha {
     public function render(){
         $config = $this->config;
         $alphabet_length = strlen($config['alphabet']);
+        $length = strlen($this->keyString);
 
-        do{
-            $font_file = $config['fonts'][mt_rand(0, count($config['fonts'])-1)];
+        do {
+            $font_file = $this->fonts[mt_rand(0, count($this->fonts)-1)];
             $font = imagecreatefrompng($font_file);
             imagealphablending($font, true);
 
@@ -121,10 +125,10 @@ class KCaptcha {
             imagefilledrectangle($img, 0, 0, $config['width']-1, $config['height']-1, $white);
 
             // draw text
-            $x=1;
-            $odd=mt_rand(0,1);
-            if($odd==0) $odd=-1;
-            for($i=0;$i < $config['length'];$i++){
+            $x = 1;
+            $odd = mt_rand(0, 1);
+            if($odd == 0) $odd=-1;
+            for($i=0;$i < $length;$i++){
                 $m = $font_metrics[$this->keyString[$i]];
 
                 $y= (($i%2)*$config['fluctuation_amplitude'] - $config['fluctuation_amplitude']/2)*$odd
@@ -169,6 +173,7 @@ class KCaptcha {
                 $x += $m['end'] - $m['start'] - $shift;
             }
         } while($x >= $config['width'] - 10); // while not fit in canvas
+
 
         //noise
         $white = imagecolorallocate($font, 255, 255, 255);
