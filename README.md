@@ -5,7 +5,7 @@ KCaptcha fork for PHP 5.3+
 
 Example:
 
-    use kaptcha\KCaptcha;
+    use kcaptcha\KCaptcha;
 
     $captcha = new KCaptcha();
     $img = $captcha->render();
